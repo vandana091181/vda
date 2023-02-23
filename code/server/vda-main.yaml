@@ -1,7 +1,7 @@
 Transform: AWS::Serverless-2016-10-31
 Description: Vehicle detection mlops backend
 Globals:
-  Api: 
+  Api:
     Cors:
       AllowMethods: "'GET,POST,OPTIONS'"
       AllowHeaders: "'*'"
@@ -38,7 +38,7 @@ Resources:
           Properties:
             Path: /meta
             Method: GET
-      CodeUri: s3://zvissh-us-east-1/v21/29ce42ba76300c9ea098ef0f570204f1
+      CodeUri: s3://zvissh-us-east-1/v04/ef02f398eddb8b4b946b2a1803241133
   GetS3PresignedUrl:
     Type: AWS::Serverless::Function
     Properties:
@@ -51,4 +51,18 @@ Resources:
           Properties:
             Path: /s3ps
             Method: GET
-      CodeUri: s3://zvissh-us-east-1/v21/29ce42ba76300c9ea098ef0f570204f1
+      CodeUri: s3://zvissh-us-east-1/v04/ef02f398eddb8b4b946b2a1803241133
+  TrainModel:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/train.train
+      Description: A function that gets app meta
+      Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /detect
+            Method: GET
+      CodeUri: s3://zvissh-us-east-1/v04/ef02f398eddb8b4b946b2a1803241133
+    DetectMask: null

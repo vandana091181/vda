@@ -51,4 +51,28 @@ Resources:
           Type: Api
           Properties:
             Path: /s3ps
+            Method: GET 
+  TrainModel:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/train.train
+      Description: A function that gets app meta
+      Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /train
+            Method: PUT 
+    DetectMask:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/train.train
+      Description: A function that gets app meta
+      Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /detect
             Method: GET            
