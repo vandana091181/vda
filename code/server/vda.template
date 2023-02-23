@@ -104,11 +104,11 @@ Resources:
     Type: "AWS::StepFunctions::StateMachine"
     Properties:
       StateMachineName: TrainModel
-      DefinitionS3Location: ./state-machine-def.json
+      DefinitionS3Location: src/state-machine-def.json
       DefinitionSubstitutions:
         TrainModelArn: !GetAtt TrainModel.Arn
         CheckTrainStatusArn: !GetAtt CheckTrainStatus.Arn
         DeployModelArn: !GetAtt DeployModel.Arn
-        CheckDeploymentArn: !Gett CheckDeploymentStatus.Arn
-      Role: '{{resolve:ssm:/vda/iam/smrole:1}}'
+        CheckDeploymentArn: !GetAtt CheckDeploymentStatus.Arn
+      RoleArn: '{{resolve:ssm:/vda/iam/sfrole:1}}'
   
