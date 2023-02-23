@@ -1,0 +1,152 @@
+{
+  "Comment": "A Hello World example of the Amazon States Language using Pass states",
+  "StartAt": "Train Model",
+  "States": {
+    "Train Model": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${TrainModelArn}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Training In Progress?"
+    },
+    "Training In Progress?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.cstatus",
+          "StringMatches": "IN_PROGRESS",
+          "Next": "Check Training Status"
+        },
+        {
+          "Variable": "$.cstatus",
+          "StringMatches": "FAILED",
+          "Next": "End"
+        },
+        {
+          "Variable": "$.cstatus",
+          "StringMatches": "SUCCESS",
+          "Next": "DeployEndPoint"
+        }
+      ],
+      "Default": "End"
+    },
+    "Check Training Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${CheckTrainStatusArn}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Wait For Train Success"
+    },
+    "Wait For Train Success": {
+      "Type": "Wait",
+      "Seconds": 120,
+      "Next": "Training In Progress?"
+    },
+    "DeployEndPoint": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${DeployModelArn}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Wait For Deployment"
+    },
+    "Wait For Deployment": {
+      "Type": "Wait",
+      "Seconds": 120,
+      "Next": "Check Deployment"
+    },
+    "Check Deployment": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${CheckDeploymentArn}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Deployed?"
+    },
+    "Deployed?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Not": {
+            "Variable": "$.cstatus",
+            "StringEquals": "DEPLOYED"
+          },
+          "Next": "Wait For Deployment"
+        },
+        {
+          "Variable": "$.cstatus",
+          "StringMatches": "FAILED",
+          "Next": "End"
+        }
+      ],
+      "Default": "End"
+    },
+    "End": {
+      "Type": "Pass",
+      "Result": "World",
+      "End": true
+    }
+  }
+}

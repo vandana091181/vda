@@ -9,7 +9,7 @@ sns = boto3.client('sns', region_name='us-east-1')
 runtime = boto3.Session().client(service_name='runtime.sagemaker', region_name = 'us-east-1') 
 sm = boto3.client('sagemaker', region_name='us-east-1')
 
-def lambda_handler(event, context):
+def detect_vehicle(event, context):
     file_name = event['user']
     s3.download_file('zvissh-us-east-1', file_name, f'/tmp/{file_name}')
     endpoint_name = get_end_point()

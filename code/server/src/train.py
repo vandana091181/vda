@@ -7,14 +7,31 @@ from datetime import datetime
 import utils as ut
 
 ddb = boto3.client('dynamodb', region_name = 'us-east-1')
+sf = boto3.client('stepfunctions', region_name = 'us-east-1')
 
-def train(event, context):
+def execute_train_state_machine(event, context):
+  job_name = event['queryStringParameters']['job_name']
+  arn =  event['queryStringParameters']['arn']
+  response = sf.start_execution(
+        stateMachineArn=arn,
+        input=json.dumps({"job_name": job_name}),
+    )
+  print(response)
+  try:
+      response = json.dumps(response['ResponseMetadata'])
+  except:
+      pass
+  return {
+      'statusCode': 200,
+      'body': response
+  }
+def train(job_name):
     # return {
     #     'event': json.dumps(event),
     #     'statusCode': 200,
     #     'cstatus': FAILED
     # }
-    job_name = event['queryStringParameters']['job_name']
+    
     training_params = ut.get_hyperparams_img(job_name)
     sagemaker = boto3.client(service_name='sagemaker', region_name = 'us-east-1')
     sagemaker.create_training_job(**training_params)

@@ -52,10 +52,10 @@ Resources:
           Properties:
             Path: /s3ps
             Method: GET 
-  TrainModel:
+  RunTrainModelStateMachine:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/train.train
+      Handler: src/train.execute_train_state_machine
       Description: A function that gets app meta
       Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
       Events:
@@ -64,10 +64,16 @@ Resources:
           Properties:
             Path: /train
             Method: PUT 
-    DetectMask:
+  TrainModel:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/train.train
+      Description: A function that gets app meta
+      Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
+  DetectMask:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/inference.detect_vehicle
       Description: A function that gets app meta
       Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
       Events:
@@ -75,4 +81,34 @@ Resources:
           Type: Api
           Properties:
             Path: /detect
-            Method: GET            
+            Method: GET
+  CheckTrainStatus:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/check_status.check_train_status
+      Description: A function that gets app meta
+      Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
+  CheckDeploymentStatus:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/check_status.check_deplyment_status
+      Description: A function that gets app meta
+      Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
+  DeployModel:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/deploy.deploy
+      Description: A function that gets app meta
+      Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
+  TrainModelStateMachine:
+    Type: "AWS::StepFunctions::StateMachine"
+    Properties:
+      StateMachineName: TrainModel
+      DefinitionS3Location: ./state-machine-def.json
+      DefinitionSubstitutions:
+        TrainModelArn: !GetAtt TrainModel.Arn
+        CheckTrainStatusArn: !GetAtt CheckTrainStatus.Arn
+        DeployModelArn: !GetAtt DeployModel.Arn
+        CheckDeploymentArn: !Gett CheckDeploymentStatus.Arn
+      Role: '{{resolve:ssm:/vda/iam/smrole:1}}'
+  

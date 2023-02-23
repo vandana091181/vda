@@ -26,43 +26,17 @@ Globals:
     Timeout: 30
     MemorySize: 128
 Resources:
-  AppMetaFunction:
+  CheckDeploymentStatus:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/meta.get_meta
+      Handler: src/check_status.check_deplyment_status
       Description: A function that gets app meta
       Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /meta
-            Method: GET
-      CodeUri: s3://zvissh-us-east-1/v04/ef02f398eddb8b4b946b2a1803241133
-  GetS3PresignedUrl:
+      CodeUri: s3://zvissh-us-east-1/v13/85bd36c6c7ef1b169161e6f2262beaa6
+  DeployModel:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/meta.get_s3_upload_ps_url
+      Handler: src/deploy.deploy
       Description: A function that gets app meta
       Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /s3ps
-            Method: GET
-      CodeUri: s3://zvissh-us-east-1/v04/ef02f398eddb8b4b946b2a1803241133
-  TrainModel:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/train.train
-      Description: A function that gets app meta
-      Role: '{{resolve:ssm:/vda/iam/lambdarole:1}}'
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /detect
-            Method: GET
-      CodeUri: s3://zvissh-us-east-1/v04/ef02f398eddb8b4b946b2a1803241133
-    DetectMask: null
+      CodeUri: s3://zvissh-us-east-1/v13/85bd36c6c7ef1b169161e6f2262beaa6
