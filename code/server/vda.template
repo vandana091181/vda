@@ -9,7 +9,7 @@ Globals:
       AllowOrigin: "'*'"
     Auth:
       AddDefaultAuthorizerToCorsPreflight: False
-    GatewayResponses:
+    GatewayResponses: 
       DEFAULT_4XX:
         ResponseParameters:
           Headers:

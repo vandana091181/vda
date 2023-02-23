@@ -106,7 +106,7 @@ def get_s3_upload_ps_url(event, context):
             'ContentType': 'image/png',
             'Expires': 3600
         }
-    )
+    )  
   
   res = {
       'statusCode': 200,
