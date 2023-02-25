@@ -4,9 +4,9 @@ import io
 import os
 import time
 from time import gmtime, strftime
+from const import BUCKET_NAME
 
 region = 'us-east-1'
-bucket = 'zvissh-us-east-1'
 
 # Define IAM role
 ssm = boto3.client('ssm', region_name='us-east-1')
@@ -26,7 +26,7 @@ def get_hyperparams_ll(job_name):
         },
         "RoleArn": role,
         "OutputDataConfig": {
-            "S3OutputPath": 's3://zvissh-eu-west-1/sagemaker/DEMO-linear-mnist/output/'
+            "S3OutputPath": f's3://{BUCKET_NAME}/sagemaker/DEMO-linear-mnist/output/'
         },
         "ResourceConfig": {
             "InstanceCount": 1,
@@ -60,7 +60,7 @@ def get_hyperparams_ll(job_name):
                 "DataSource": {
                     "S3DataSource": {
                         "S3DataType": "S3Prefix",
-                        "S3Uri": 's3://zvissh-eu-west-1/sagemaker/DEMO-linear-mnist/train/',
+                        "S3Uri": f's3://{BUCKET_NAME}/sagemaker/DEMO-linear-mnist/train/',
                         "S3DataDistributionType": "FullyReplicated"
                     }
                 },
@@ -71,7 +71,7 @@ def get_hyperparams_ll(job_name):
                 "DataSource": {
                     "S3DataSource": {
                         "S3DataType": "S3Prefix",
-                        "S3Uri": 's3://zvissh-eu-west-1/sagemaker/DEMO-linear-mnist/validation/',
+                        "S3Uri": f's3://{BUCKET_NAME}/sagemaker/DEMO-linear-mnist/validation/',
                         "S3DataDistributionType": "FullyReplicated"
                     }
                 },
@@ -103,7 +103,7 @@ def get_hyperparams_img(job_name):
         },
         "RoleArn": role,
         "OutputDataConfig": {
-            "S3OutputPath": 's3://zvissh-us-east-1/ll-data/out/'
+            "S3OutputPath": f's3://BUCKET_NAME/ll-data/out/'
         },
         "ResourceConfig": {
             "InstanceCount": 1,
@@ -132,7 +132,7 @@ def get_hyperparams_img(job_name):
                 "DataSource": {
                     "S3DataSource": {
                         "S3DataType": "S3Prefix",
-                        "S3Uri": 's3://zvissh-us-east-1/clf-demo/train/',
+                        "S3Uri": f's3://{BUCKET_NAME}/clf-demo/train/',
                         "S3DataDistributionType": "FullyReplicated"
                     }
                 },
@@ -144,7 +144,7 @@ def get_hyperparams_img(job_name):
                 "DataSource": {
                     "S3DataSource": {
                         "S3DataType": "S3Prefix",
-                        "S3Uri": 's3://zvissh-us-east-1/clf-demo/validation/',
+                        "S3Uri": f's3://{BUCKET_NAME}/clf-demo/validation/',
                         "S3DataDistributionType": "FullyReplicated"
                     }
                 },

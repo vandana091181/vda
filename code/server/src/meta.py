@@ -1,7 +1,7 @@
 import json
 import boto3
+from const import BUCKET_NAME as bucket
 
-bucket = 'zvissh-us-east-1'
 region = 'us-east-1'
 
 s3 = boto3.client('s3', region_name=region)

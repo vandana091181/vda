@@ -2,6 +2,7 @@ import json
 import boto3
 import json
 
+from const import BUCKET_NAME
 
 s3 = boto3.client('s3', region_name='us-east-1')
 sns = boto3.client('sns', region_name='us-east-1')
@@ -11,7 +12,7 @@ sm = boto3.client('sagemaker', region_name='us-east-1')
 
 def detect_vehicle(event, context):
     file_name = event['user']
-    s3.download_file('zvissh-us-east-1', file_name, f'/tmp/{file_name}')
+    s3.download_file('BUCKET_NAME', file_name, f'/tmp/{file_name}')
     endpoint_name = get_end_point()
 
     with open(f'/tmp/{file_name}', 'rb') as f:
